@@ -14,7 +14,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.MedicalHealth"
+      "bundleIdentifier": "com.anonymous.MedicalHealth",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to your camera to take profile pictures.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select profile pictures."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,11 +27,24 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.MedicalHealth"
+      "package": "com.anonymous.MedicalHealth",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": []
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you set your profile picture.",
+          "cameraPermission": "The app accesses your camera to let you take a profile picture."
+        }
+      ]
+    ]
   }
 }

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppRoute";
+import CustomButton from "../components/CustomButton";
 import splashScreenlogo1 from "../../assets/splashScreenlogo1.png";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
@@ -31,13 +32,16 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("Login1")}>
-            <Text style={styles.loginButtonText}>Log In</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate("SignUp")}>
-            <Text style={styles.signUpButtonText}>Sign Up</Text>
-          </TouchableOpacity>
+          <CustomButton
+            title="Log In"
+            onPress={() => navigation.navigate("Login1")}
+            variant="primary"
+          />
+          <CustomButton
+            title="Sign Up"
+            onPress={() => navigation.navigate("SignUp")}
+            variant="secondary"
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -89,28 +93,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 16,
-  },
-  loginButton: {
-    backgroundColor: "#2260FF",
-    paddingVertical: 16,
-    borderRadius: 50,
-    alignItems: "center",
-  },
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  signUpButton: {
-    backgroundColor: "#E3F2FD",
-    paddingVertical: 16,
-    borderRadius: 50,
-    alignItems: "center",
-  },
-  signUpButtonText: {
-    color: "#2260FF",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });
 

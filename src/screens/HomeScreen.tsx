@@ -136,10 +136,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate("Notification")}>
               <Ionicons name="notifications-outline" size={24} color="#2260FF" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate("Settings")}>
               <Ionicons name="settings-outline" size={24} color="#2260FF" />
             </TouchableOpacity>
           </View>
@@ -148,21 +148,27 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         {/* Navigation Tabs and Search */}
         <View style={styles.navSection}>
           <View style={styles.navRow}>
-            <TouchableOpacity style={styles.tabItem} onPress={() => setSelectedTab("Doctors")}>
+            <TouchableOpacity
+              style={styles.tabItem}
+              onPress={() => navigation.navigate("Doctors")}
+            >
               <MaterialCommunityIcons
                 name="stethoscope"
                 size={22}
-                color={selectedTab === "Doctors" ? "#2260FF" : "#999999"}
+                color="#2260FF"
               />
-              <Text style={[styles.tabText, selectedTab === "Doctors" && styles.tabTextActive,]}>
+              <Text style={[styles.tabText, styles.tabTextActive]}>
                 Doctors
               </Text>
             </TouchableOpacity>
 
             {/* Favorite */}
-            <TouchableOpacity style={styles.tabItem} onPress={() => setSelectedTab("Favorite")}>
-              <FontAwesome name="heart-o" size={20} color={selectedTab === "Favorite" ? "#2260FF" : "#999999"} />
-              <Text style={[styles.tabText, selectedTab === "Favorite" && styles.tabTextActive,]}>
+            <TouchableOpacity
+              style={styles.tabItem}
+              onPress={() => navigation.navigate("Favorite")}
+            >
+              <FontAwesome name="heart-o" size={20} color="#2260FF" />
+              <Text style={[styles.tabText, styles.tabTextActive]}>
                 Favorite
               </Text>
             </TouchableOpacity>
@@ -269,22 +275,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <FlatList data={doctors} renderItem={renderDoctorCard} keyExtractor={(item) => item.id} scrollEnabled={false} />
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="chatbubble-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="calendar-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -380,7 +370,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: "#000000",
-    padding: 0,
+    padding: 8,
   },
   tabsContainer: {
     flexDirection: "row",
@@ -571,22 +561,6 @@ const styles = StyleSheet.create({
   },
   actionIcon: {
     padding: 4,
-  },
-  bottomNav: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    backgroundColor: "#2260FF",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    justifyContent: "space-around",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  navItem: {
-    padding: 8,
   },
 });
 

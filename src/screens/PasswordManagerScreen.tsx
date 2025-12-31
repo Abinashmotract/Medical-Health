@@ -14,49 +14,65 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SetPassword">;
+type Props = NativeStackScreenProps<RootStackParamList, "PasswordManager">;
 
-const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
-  const [password, setPassword] = useState("");
+const PasswordManagerScreen: React.FC<Props> = ({ navigation }) => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" translucent={false} />
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#2260FF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Set Password</Text>
+          <Text style={styles.headerTitle}>Password Manager</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </Text>
-
+          <Text style={styles.label}>Current Password</Text>
           <CustomTextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
+            placeholder="Current Password"
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
             secureTextEntry={true}
             showPasswordToggle={true}
+            containerStyle={{ marginBottom: 16 }}
+          />
+          <TouchableOpacity
+            style={styles.forgotPassword}
+            onPress={() => navigation.navigate("SetPassword")}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.label}>New Password</Text>
+          <CustomTextInput
+            placeholder="New Password"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            secureTextEntry={true}
+            showPasswordToggle={true}
+            containerStyle={{ marginBottom: 16 }}
           />
 
+          <Text style={styles.label}>Confirm New Password</Text>
           <CustomTextInput
-            placeholder="Confirm Password"
+            placeholder="Confirm New Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry={true}
             showPasswordToggle={true}
+            containerStyle={{ marginBottom: 24 }}
           />
 
           <CustomButton
-            title="Create New Password"
-            onPress={() => navigation.navigate("Login1")}
+            title="Change Password"
+            onPress={() => navigation.goBack()}
             variant="primary"
             style={{ marginTop: 20 }}
           />
@@ -70,10 +86,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
   },
   headerContainer: {
     flexDirection: "row",
@@ -101,16 +113,29 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 40,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
   },
-  description: {
+  content: {
+    paddingBottom: 40,
+  },
+  label: {
     fontSize: 14,
-    color: "#666666",
-    lineHeight: 20,
-    marginBottom: 32,
+    fontWeight: "500",
+    color: "#000000",
+    marginBottom: 8,
+    marginTop: 4,
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: "#2260FF",
   },
 });
 
-export default SetPasswordScreen;
+export default PasswordManagerScreen;
 

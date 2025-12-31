@@ -9,24 +9,28 @@ import {
   ScrollView,
   Platform,
   Modal,
+  Image,
+  Alert,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppRoute";
-import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as ImagePicker from "expo-image-picker";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SignUp">;
+type Props = NativeStackScreenProps<RootStackParamList, "EditProfile">;
 
-const SignUpScreen: React.FC<Props> = ({ navigation }) => {
-  const [fullName, setFullName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
+const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const [fullName, setFullName] = useState("John Doe");
+  const [phoneNumber, setPhoneNumber] = useState("+123 567 89000");
+  const [email, setEmail] = useState("johndoe@example.com");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showImagePickerModal, setShowImagePickerModal] = useState(false);
 
   const formatDate = (date: Date): string => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -43,7 +47,6 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         setDateOfBirth(formatDate(date));
       }
     } else {
-      // iOS - handle in modal
       if (date) {
         setSelectedDate(date);
       }
@@ -55,40 +58,106 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     setShowDatePicker(false);
   };
 
+  const requestPermissions = async () => {
+    if (Platform.OS !== "web") {
+      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+      const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (cameraStatus !== "granted" || mediaLibraryStatus !== "granted") {
+        Alert.alert("Permission Required", "Please grant camera and media library permissions to upload images.");
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const pickImageFromGallery = async () => {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    setShowImagePickerModal(false);
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
+  const pickImageFromCamera = async () => {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    setShowImagePickerModal(false);
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
+  const handleImagePicker = () => {
+    setShowImagePickerModal(true);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" translucent={false} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#2260FF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>New Account</Text>
-          <View style={styles.headerSpacer} />
+
+          <Text style={styles.headerTitle}>Profile</Text>
+
+          <TouchableOpacity
+            style={styles.settingButton}
+            onPress={() => navigation.navigate("Settings")}
+          >
+            <Ionicons name="settings-outline" size={22} color="#2260FF" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
+          {/* Profile Picture */}
+          <View style={styles.profileImageContainer}>
+            <View style={styles.profileImage}>
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} style={styles.profileImageSource} />
+              ) : (
+                <Text style={styles.profileEmoji}>👨</Text>
+              )}
+              <TouchableOpacity style={styles.editIcon} onPress={handleImagePicker}>
+                <Ionicons name="pencil" size={16} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Input Fields */}
           <Text style={styles.label}>Full Name</Text>
           <CustomTextInput
-            placeholder="Full name"
+            placeholder="Full Name"
             value={fullName}
             onChangeText={setFullName}
-            autoCapitalize="words"
-            containerStyle={{ marginBottom: 6 }}
+            containerStyle={{ marginBottom: 16 }}
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>Phone Number</Text>
           <CustomTextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={true}
-            showPasswordToggle={true}
-            containerStyle={{ marginBottom: 6 }}
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            containerStyle={{ marginBottom: 16 }}
           />
 
           <Text style={styles.label}>Email</Text>
@@ -98,20 +167,10 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            containerStyle={{ marginBottom: 6 }}
-          />
-
-          <Text style={styles.label}>Mobile Number</Text>
-          <CustomTextInput
-            placeholder="Mobile Number"
-            value={mobileNumber}
-            onChangeText={setMobileNumber}
-            keyboardType="phone-pad"
-            containerStyle={{ marginBottom: 6 }}
+            containerStyle={{ marginBottom: 16 }}
           />
 
           <Text style={styles.label}>Date Of Birth</Text>
-
           <TouchableOpacity
             style={styles.datePickerContainer}
             onPress={() => setShowDatePicker(true)}
@@ -123,7 +182,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                 dateOfBirth ? styles.datePickerTextFilled : styles.datePickerTextPlaceholder,
               ]}
             >
-              {dateOfBirth || "Date Of Birth"}
+              {dateOfBirth || "DD / MM / YYYY"}
             </Text>
             <Ionicons name="calendar-outline" size={20} color="#999999" style={styles.calendarIcon} />
           </TouchableOpacity>
@@ -169,45 +228,44 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             )
           )}
 
-          <Text style={styles.termsText}>
-            By continuing, you agree to{" "}
-            <Text style={styles.termsLink}>Terms of Use</Text> and{" "}
-            <Text style={styles.termsLink}>Privacy Policy</Text>.
-          </Text>
-
           <CustomButton
-            title="Sign Up"
-            onPress={() => navigation.navigate("Home")}
+            title="Update Profile"
+            onPress={() => navigation.goBack()}
             variant="primary"
-            style={{ marginBottom: 20 }}
+            style={{ marginTop: 20 }}
           />
-
-          <View style={styles.socialContainer}>
-            <Text style={styles.socialText}>or sign up with</Text>
-            <View style={styles.socialIcons}>
-              <TouchableOpacity style={styles.socialIcon}>
-                <FontAwesome name="google" size={22} color="#DB4437" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialIcon}>
-                <FontAwesome name="facebook" size={22} color="#1877F2" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialIcon}>
-                <MaterialIcons name="fingerprint" size={26} color="#2260FF" />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.loginLink}
-            onPress={() => navigation.navigate("Login1")}
-          >
-            <Text style={styles.loginLinkText}>
-              already have an account?{" "}
-              <Text style={styles.loginLinkBold}>Log in</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Image Picker Modal */}
+      <Modal
+        visible={showImagePickerModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowImagePickerModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Image</Text>
+            <View style={styles.imagePickerButtons}>
+              <TouchableOpacity style={styles.imagePickerButton} onPress={pickImageFromCamera}>
+                <Ionicons name="camera" size={24} color="#2260FF" />
+                <Text style={styles.imagePickerButtonText}>Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.imagePickerButton} onPress={pickImageFromGallery}>
+                <Ionicons name="images" size={24} color="#2260FF" />
+                <Text style={styles.imagePickerButtonText}>Gallery</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.cancelImagePickerButton}
+              onPress={() => setShowImagePickerModal(false)}
+            >
+              <Text style={styles.cancelImagePickerText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -217,17 +275,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-  },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 30,
     paddingHorizontal: 0,
   },
   backButton: {
@@ -235,6 +288,12 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "flex-start",
+  },
+  settingButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   headerTitle: {
     fontSize: 24,
@@ -248,8 +307,47 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 40,
   },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+  },
   content: {
-    flex: 1,
+    paddingBottom: 40,
+  },
+  profileImageContainer: {
+    alignItems: "center",
+    marginBottom: 30,
+    marginTop: 10,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#E3F2FD",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  profileEmoji: {
+    fontSize: 50,
+  },
+  profileImageSource: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  editIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#2260FF",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
   },
   label: {
     fontSize: 14,
@@ -267,7 +365,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginBottom: 6,
+    marginBottom: 16,
     backgroundColor: "#FFFFFF",
   },
   datePickerText: {
@@ -321,61 +419,34 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
   },
-  termsText: {
-    fontSize: 12,
-    color: "#666666",
-    lineHeight: 18,
-    marginBottom: 24,
-    textAlign: "center",
-  },
-  termsLink: {
-    textDecorationLine: "underline",
-    color: "#2260FF",
-  },
-  socialContainer: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  socialText: {
-    fontSize: 14,
-    color: "#666666",
-    marginBottom: 6,
-  },
-  socialIcons: {
+  imagePickerButtons: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-around",
+    marginVertical: 24,
+    gap: 20,
+  },
+  imagePickerButton: {
     alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: "#E3F2FD",
+    minWidth: 100,
   },
-  socialIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    marginHorizontal: 8,
-  },
-  socialIconText: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#666666",
-  },
-  loginLink: {
-    alignItems: "center",
-    marginTop: "auto",
-    marginBottom: 20,
-  },
-  loginLinkText: {
+  imagePickerButtonText: {
+    marginTop: 8,
     fontSize: 14,
-    color: "#666666",
-  },
-  loginLinkBold: {
-    fontWeight: "600",
+    fontWeight: "500",
     color: "#2260FF",
+  },
+  cancelImagePickerButton: {
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  cancelImagePickerText: {
+    fontSize: 16,
+    color: "#666666",
   },
 });
 
-export default SignUpScreen;
+export default EditProfileScreen;
 

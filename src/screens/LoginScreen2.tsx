@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppRoute";
 import { Ionicons } from "@expo/vector-icons";
 import CustomTextInput from "../components/CustomTextInput";
+import CustomButton from "../components/CustomButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login2">;
 
@@ -60,12 +61,12 @@ const LoginScreen2: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.forgotPasswordText}>Forget Password</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.loginButton}
+          <CustomButton
+            title="Log In"
             onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.loginButtonText}>Log In</Text>
-          </TouchableOpacity>
+            variant="primary"
+            style={{ marginBottom: 32 }}
+          />
 
           <View style={styles.socialContainer}>
             <Text style={styles.socialText}>or</Text>
@@ -140,18 +141,6 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: 14,
     color: "#2260FF",
-  },
-  loginButton: {
-    backgroundColor: "#2260FF",
-    paddingVertical: 16,
-    borderRadius: 50,
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
   },
   socialContainer: {
     alignItems: "center",

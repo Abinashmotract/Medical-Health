@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -11,54 +11,31 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppRoute";
 import { Ionicons } from "@expo/vector-icons";
-import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 
-type Props = NativeStackScreenProps<RootStackParamList, "SetPassword">;
+type Props = NativeStackScreenProps<RootStackParamList, "DeleteAccount">;
 
-const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
+const DeleteAccountScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" translucent={false} />
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="#2260FF" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Set Password</Text>
+          <Text style={styles.headerTitle}>Delete Account</Text>
           <View style={styles.headerSpacer} />
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <Text style={styles.warningText}>
+            Are you sure you want to delete your account? This action cannot be undone.
           </Text>
-
-          <CustomTextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={true}
-            showPasswordToggle={true}
-          />
-
-          <CustomTextInput
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry={true}
-            showPasswordToggle={true}
-          />
-
           <CustomButton
-            title="Create New Password"
-            onPress={() => navigation.navigate("Login1")}
-            variant="primary"
-            style={{ marginTop: 20 }}
+            title="Delete Account"
+            onPress={() => {}}
+            variant="danger"
           />
         </View>
       </ScrollView>
@@ -70,10 +47,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
   },
   headerContainer: {
     flexDirection: "row",
@@ -101,16 +74,20 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 40,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
   },
-  description: {
-    fontSize: 14,
+  content: {
+    paddingBottom: 40,
+  },
+  warningText: {
+    fontSize: 16,
     color: "#666666",
-    lineHeight: 20,
-    marginBottom: 32,
+    lineHeight: 24,
+    marginBottom: 24,
   },
 });
 
-export default SetPasswordScreen;
+export default DeleteAccountScreen;
 
